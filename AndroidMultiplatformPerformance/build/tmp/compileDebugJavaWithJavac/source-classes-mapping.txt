@@ -1,0 +1,2 @@
+com/example/kotlinmultiplatformperformance/AndroidMultiplatformPerformance/BuildConfig.java
+ com.example.kotlinmultiplatformperformance.AndroidMultiplatformPerformance.BuildConfig
