@@ -150,5 +150,16 @@ __attribute__((swift_name("Platform")))
 @property (readonly) NSString *platform __attribute__((swift_name("platform")));
 @end;
 
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("ThreadPerformance")))
+@interface CommonThreadPerformance : CommonBase
+- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
++ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
+- (void)doSomeWorkCallback:(void (^)(void))callback __attribute__((swift_name("doSomeWork(callback:)")));
+- (void)onMainThread __attribute__((swift_name("onMainThread()")));
+- (NSArray<CommonInt *> *)singleTask __attribute__((swift_name("singleTask()")));
+- (void)singleTaskOnMultipleThreads __attribute__((swift_name("singleTaskOnMultipleThreads()")));
+@end;
+
 #pragma clang diagnostic pop
 NS_ASSUME_NONNULL_END
