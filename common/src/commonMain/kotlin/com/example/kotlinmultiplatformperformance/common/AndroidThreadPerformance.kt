@@ -1,34 +1,23 @@
 package com.example.kotlinmultiplatformperformance.common
-
 import kotlinx.coroutines.*
 
-// package org.example.kotlin.multiplatform.coroutines
-// import kotlinx.coroutines.CoroutineScope
 
-class ThreadPerformance {
-    private val testArray = (0..5000).toList()
+class AndroidThreadPerformance(size: Int) {
+    private val testArray = (0..size).toList();
 
-    fun onMainThread() {
-        compute()
-    }
-
-    fun singleTask(): List<Int> {
-        return bubbleSort(testArray)
-    }
-
-    fun doSomeWork(callback: (() -> Unit)) {
-
+    fun testSingleTaskOnSingleBackgroundThread() {
         GlobalScope.launch {
             // heavy operation here that returns a Result
             compute()
-            withContext(Dispatchers.Main) {
-                callback()
-            }
+//            withContext(Dispatchers.Main) {
+//                callback()
+//            }
         }
     }
-    fun singleTaskOnMultipleThreads() {
+
+    fun testMultipleTaskOnMultipleBackgroundThread() {
         // For running compute on multiple background threads
-        // Not sure if that is working correctly atm. We hope to spawn multiple threads and work on the task in parallel
+        // Not sure if that is working correctly atm. We hope to spawn multiple threads and work on the tasks in parallel
         for (currentIndex in 0 until 5) {
             GlobalScope.launch {
                 // heavy operation here that returns a Result
@@ -37,14 +26,12 @@ class ThreadPerformance {
         }
     }
 
-    fun multipleTaskOnSingleBackgroundThread() {
-        // For running compute multiple times on background thread
-        // Not sure if that is working correctly atm. We would like to start multi[le tasks on a single background thread
-        GlobalScope.launch {
-            for (currentIndex in 0 until 5) {
-                 compute()
-            }
-        }
+    fun testSequentialTasksOnSingleBackgrounThread() {
+        // Not sure if we need that?
+    }
+
+    fun singleTask(): List<Int> {
+        return bubbleSort(testArray)
     }
 
     private fun compute() {

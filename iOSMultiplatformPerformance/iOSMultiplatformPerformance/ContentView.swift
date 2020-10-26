@@ -8,46 +8,44 @@ func greet() -> String {
 import SwiftUI
 
 struct ContentView: View {
-    let model: PerformanceModel
+    var model: PerformanceModel
 
     var body: some View {
         VStack{
-            Button(action: model.onMainThread) {
+            HStack{
+                Button(action: model.iosTesting) {
+                    Spacer()
+                    Text("iOS")
+                        .multilineTextAlignment(.center)
+                    Spacer()
+                }
+                .padding()
+                .border(Color.blue, width: 1)
+                Button(action: model.androidTesting) {
+                    Spacer()
+                    Text("Android")
+                        .multilineTextAlignment(.center)
+                    Spacer()
+                }
+                .padding()
+                .border(Color.blue, width: 1)
+            }
+            .padding(EdgeInsets(top: 0, leading: 0, bottom: 10, trailing: 0))
+            Button(action: model.singleTaskOnSingleBackgroundThread) {
                 Spacer()
-                Text("On Main Thread")
+                Text("Single Task On Single Background Thread")
                     .multilineTextAlignment(.center)
                 Spacer()
             }
-                .padding()
-                .border(Color.blue, width: 1)
-            Button(action: model.measureThat) {
-                Spacer()
-                Text("Start computation in background")
-                    .multilineTextAlignment(.center)
-                Spacer()
-            }
-                .padding()
-                .border(Color.blue, width: 1)
-
-            Button("Start computations on multiple Threads",
-                   action: model.singleTaskOnMultipleThreads)
-                .multilineTextAlignment(.center)
-                .padding()
-                .border(Color.blue, width: 1)
-
-            Button(action: model.multipleTaskOnSingleBackgroundThread) {
-                Text("Start multiple computations on single thread")
-            }
-            .multilineTextAlignment(.center)
             .padding()
             .border(Color.blue, width: 1)
 
-            Button(action: model.networkCall) {
+            Button(action: model.multipleTaskOnMultipleBackgroundThread) {
                 Spacer()
-                Text("Network call")
+                Text("Multiple Task On Multiple Background Thread")
+                    .multilineTextAlignment(.center)
                 Spacer()
             }
-            .multilineTextAlignment(.center)
             .padding()
             .border(Color.blue, width: 1)
         }
