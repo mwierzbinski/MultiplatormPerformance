@@ -28,14 +28,16 @@ enum Platform {
 
 class PerformanceModel: ObservableObject {
     private let queue = DispatchQueue(label: "com.app.concurrentQueue", attributes: .concurrent)
+    private let swiftThreadPerformance = SwiftThreadPerformance(size: 200)
+    private let androidThreadPerformance = AndroidThreadPerformance(size: 200)
     @Published var currentPlatform: Platform = .iOS
 
     private var performanceTester: TestThreadPerformance {
         switch currentPlatform {
         case .iOS:
-            return SwiftThreadPerformance(size: 2000)
+            return swiftThreadPerformance
         case .android:
-            return AndroidThreadPerformance(size: 2000)
+            return androidThreadPerformance
         }
     }
 
