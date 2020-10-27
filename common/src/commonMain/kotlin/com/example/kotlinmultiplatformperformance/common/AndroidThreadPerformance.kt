@@ -1,45 +1,41 @@
 package com.example.kotlinmultiplatformperformance.common
+
 import kotlinx.coroutines.*
+import kotlin.random.Random
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
+@ExperimentalTime
+class AndroidThreadPerformance(private val size: Int) {
 
-class AndroidThreadPerformance(size: Int) {
-    private val testArray = (0..size).toList();
-
-    fun testSingleTaskOnSingleBackgroundThread() {
-        GlobalScope.launch {
-            // heavy operation here that returns a Result
-            compute()
-//            withContext(Dispatchers.Main) {
-//                callback()
-//            }
+    suspend fun testSingleTaskOnSingleBackgroundThread() = withContext(Dispatchers.Default) {
+        val measureTime = measureTime {
+            val single = compute()
         }
+        "single task on a background thread took $measureTime"
     }
 
-    fun testMultipleTaskOnMultipleBackgroundThread() {
-        // For running compute on multiple background threads
-        // Not sure if that is working correctly atm. We hope to spawn multiple threads and work on the tasks in parallel
-        for (currentIndex in 0 until 5) {
-            GlobalScope.launch {
-                // heavy operation here that returns a Result
-                compute()
-            }
-        }
+    suspend fun testSingleTaskOnMultipleBackgroundThread() = withContext(Dispatchers.Default) {
+        val async1 = async { compute() }
+        val async2 = async { compute() }
+        val async3 = async { compute() }
+        val async4 = async { compute() }
+        val async5 = async { compute() }
+
+        val total = async1.await() + async2.await() + async3.await() + async4.await() + async5.await()
+        "four task on a background thread took $total adding them up"
     }
 
-    fun testSequentialTasksOnSingleBackgrounThread() {
-        // Not sure if we need that?
-    }
+    private fun compute(): Duration = measureTime {
+        val random = Random(size)
+        val testArray = IntArray(size) { random.nextInt() }
 
-    fun singleTask(): List<Int> {
-        return bubbleSort(testArray)
-    }
-
-    private fun compute() {
-        bubbleSort(testArray)
+        bubbleSort(testArray.toList())
     }
 
     private fun bubbleSort(array: List<Int>): List<Int> {
-        var sorted = array.toMutableList()
+        val sorted = array.toMutableList()
         var didSwitch = true
         while (didSwitch) {
             didSwitch = false

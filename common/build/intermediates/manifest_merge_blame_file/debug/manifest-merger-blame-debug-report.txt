@@ -6,8 +6,8 @@
 6
 7    <uses-sdk
 8        android:minSdkVersion="24"
-8-->/Users/michal/Projects/Multiplatform/MultiplatormPerformance/common/src/androidMain/AndroidManifest.xml
+8-->/Users/zegnus/Development/MultiplatormPerformance/common/src/androidMain/AndroidManifest.xml
 9        android:targetSdkVersion="29" />
-9-->/Users/michal/Projects/Multiplatform/MultiplatormPerformance/common/src/androidMain/AndroidManifest.xml
+9-->/Users/zegnus/Development/MultiplatormPerformance/common/src/androidMain/AndroidManifest.xml
 10
 11</manifest>
