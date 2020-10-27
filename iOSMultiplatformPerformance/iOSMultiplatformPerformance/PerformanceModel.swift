@@ -28,8 +28,8 @@ enum Platform {
 
 class PerformanceModel: ObservableObject {
     private let queue = DispatchQueue(label: "com.app.concurrentQueue", attributes: .concurrent)
-    private let swiftThreadPerformance = SwiftThreadPerformance(size: 200)
-    private let androidThreadPerformance = AndroidThreadPerformance(size: 200)
+    private let swiftThreadPerformance = SwiftThreadPerformance(size: 2000)
+    private let androidThreadPerformance = AndroidThreadPerformance(size: 2000)
     @Published var currentPlatform: Platform = .iOS
 
     private var performanceTester: TestThreadPerformance {
@@ -46,7 +46,10 @@ class PerformanceModel: ObservableObject {
     }
 
     func androidTesting() {
-        currentPlatform = .android
+        Greeting().greeting { text in
+            print(text)
+        }
+//        currentPlatform = .android
     }
 
     func singleTaskOnSingleBackgroundThread() {
@@ -119,4 +122,6 @@ class SwiftThreadPerformance: TestThreadPerformance {
     }
 }
 
-extension AndroidThreadPerformance: TestThreadPerformance {}
+//
+//extension AndroidThreadPerformance: TestThreadPerformance {
+//}

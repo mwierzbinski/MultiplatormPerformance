@@ -1,10 +1,6 @@
 import SwiftUI
 import common
 
-func greet() -> String {
-    return Greeting().greeting()
-}
-
 import SwiftUI
 
 struct ContentView: View {
