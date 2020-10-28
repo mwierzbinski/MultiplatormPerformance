@@ -36,10 +36,9 @@ class AndroidThreadPerformance(private val size: Int, private val scope: Corouti
     }
 
     private fun compute(): Duration = measureTime {
-        val random = Random(size)
-        val testArray = IntArray(size) { random.nextInt() }
+        val testArray =  (0..size).toList()
 
-        bubbleSort(testArray.toList())
+        bubbleSort(testArray)
     }
 
     private fun bubbleSort(array: List<Int>): List<Int> {
