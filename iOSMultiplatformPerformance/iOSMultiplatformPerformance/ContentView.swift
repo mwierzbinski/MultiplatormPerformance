@@ -1,44 +1,22 @@
 import SwiftUI
 import common
 
-import SwiftUI
-
 struct ContentView: View {
     var model: PerformanceModel
 
     var body: some View {
         VStack{
-            HStack{
-                Button(action: model.iosTesting) {
-                    Spacer()
-                    Text("iOS")
-                        .multilineTextAlignment(.center)
-                    Spacer()
-                }
-                .padding()
-                .border(Color.blue, width: 1)
-                Button(action: model.androidTesting) {
-                    Spacer()
-                    Text("Android")
-                        .multilineTextAlignment(.center)
-                    Spacer()
-                }
-                .padding()
-                .border(Color.blue, width: 1)
-            }
-            .padding(EdgeInsets(top: 0, leading: 0, bottom: 10, trailing: 0))
-            Button(action: model.singleTaskOnSingleBackgroundThread) {
+            Button(action: model.iosTesting) {
                 Spacer()
-                Text("Single Task On Single Background Thread")
+                Text("iOS")
                     .multilineTextAlignment(.center)
                 Spacer()
             }
             .padding()
             .border(Color.blue, width: 1)
-
-            Button(action: model.multipleTaskOnMultipleBackgroundThread) {
+            Button(action: model.androidTesting) {
                 Spacer()
-                Text("Multiple Task On Multiple Background Thread")
+                Text("Android")
                     .multilineTextAlignment(.center)
                 Spacer()
             }
