@@ -1,11 +1,11 @@
-package org.example.kotlin.multiplatform.coroutines
+package com.example.kotlinmultiplatformperformance.common
 
 import kotlinx.coroutines.*
 import platform.darwin.*
 import kotlin.coroutines.CoroutineContext
 
 @UseExperimental(InternalCoroutinesApi::class)
-class MainDispatcher : CoroutineDispatcher(), Delay {
+private class MainDispatcher : CoroutineDispatcher(), Delay {
     @Suppress("TooGenericExceptionCaught")
     override fun dispatch(context: CoroutineContext, block: Runnable) {
         dispatch_async(dispatch_get_main_queue()) {
@@ -38,12 +38,46 @@ class MainDispatcher : CoroutineDispatcher(), Delay {
             }
         }
     }
+
+    @InternalCoroutinesApi
+    @Suppress("TooGenericExceptionCaught")
+    override fun invokeOnTimeout(
+        timeMillis: Long,
+        block: Runnable,
+        context: CoroutineContext
+    ): DisposableHandle {
+        val handle = object : DisposableHandle {
+            var disposed = false
+                private set
+
+            override fun dispose() {
+                disposed = true
+            }
+        }
+        dispatch_after(
+            dispatch_time(DISPATCH_TIME_NOW, timeMillis * 1_000_000),
+            dispatch_get_main_queue()
+        ) {
+            try {
+                if (!handle.disposed) {
+                    block.run()
+                }
+            } catch (err: Throwable) {
+                logError("UNCAUGHT", err.message ?: "", err)
+                throw err
+            }
+        }
+
+        return handle
+    }
 }
 
 private fun logError(label: String, message: String, throwable: Throwable) {
     println("$label: $message")
     throwable.printStackTrace()
 }
+
+public actual fun CustomMainScope(): CoroutineScope = CustomMainScopeImpl()
 
 internal class CustomMainScopeImpl : CoroutineScope {
     private val dispatcher = MainDispatcher()

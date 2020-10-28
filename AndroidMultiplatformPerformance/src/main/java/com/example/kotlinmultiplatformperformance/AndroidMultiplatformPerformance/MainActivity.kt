@@ -1,12 +1,10 @@
 package com.example.kotlinmultiplatformperformance.AndroidMultiplatformPerformance
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.kotlinmultiplatformperformance.common.Greeting
+import android.util.Log
 import android.widget.TextView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import androidx.appcompat.app.AppCompatActivity
+import com.example.kotlinmultiplatformperformance.common.Greeting
 import kotlin.time.ExperimentalTime
 
 @ExperimentalTime
@@ -18,6 +16,9 @@ class MainActivity : AppCompatActivity() {
         val tv: TextView = findViewById(R.id.text_view)
         tv.text = "start computing"
 
-        Greeting().greeting { tv.text = it }
+        Greeting().greeting {
+            Log.d("AndroidTestWoo", it)
+            tv.text = it
+        }
     }
 }

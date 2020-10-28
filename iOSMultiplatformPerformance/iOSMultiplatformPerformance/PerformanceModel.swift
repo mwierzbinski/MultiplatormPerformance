@@ -1,24 +1,22 @@
 import Foundation
 import common
 
-// TODOs:
-// 1. Implement remaining Android tests
-// 2. Clean up code.
+/*
+ TODOs:
 
-// 1a. Add additional logging to look into dispatch to main/background thread. Think of cheat test.
-// 3. Prepare code for multiple runs
+ 3. Prepare code for multiple runs
+ 5. Test with Performance analyze tools (Xcode)
+ 6. Write a post ?
 
-// 4. Test on device.
-// 5. Test with Performance analyze tools (Xcode)
-// 6. Write a post ?
-
-// Additional notes
-// should we consider injecting compute to android?
+ ---
+ Can print all async tasks individually on Android instead of block completion time (as we do on iOS)
+ Random array causes inconsistent results
+ Android currently has issue that tests are running at the same time (not blocking)
+ */
 
 protocol TestThreadPerformance {
     func testSingleTaskOnSingleBackgroundThread()
     func testMultipleTaskOnMultipleBackgroundThread()
-    func testSequentialTasksOnSingleBackgrounThread()
 }
 
 enum Platform {
@@ -29,16 +27,15 @@ enum Platform {
 class PerformanceModel: ObservableObject {
     private let queue = DispatchQueue(label: "com.app.concurrentQueue", attributes: .concurrent)
     private let swiftThreadPerformance = SwiftThreadPerformance(size: 2000)
-    private let androidThreadPerformance = AndroidThreadPerformance(size: 2000)
     @Published var currentPlatform: Platform = .iOS
 
     private var performanceTester: TestThreadPerformance {
-        switch currentPlatform {
-        case .iOS:
+//        switch currentPlatform {
+//        case .iOS:
             return swiftThreadPerformance
-        case .android:
-            return androidThreadPerformance
-        }
+//        case .android:
+//            return androidThreadPerformance
+//        }
     }
 
     func iosTesting() {
@@ -46,10 +43,11 @@ class PerformanceModel: ObservableObject {
     }
 
     func androidTesting() {
+
         Greeting().greeting { text in
             print(text)
         }
-//        currentPlatform = .android
+        currentPlatform = .android
     }
 
     func singleTaskOnSingleBackgroundThread() {
@@ -82,21 +80,21 @@ class SwiftThreadPerformance: TestThreadPerformance {
     }
 
     func testSingleTaskOnSingleBackgroundThread() {
+        let startTime = Date()
         DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
             self.compute()
+            print(Date().timeIntervalSince(startTime))
         }
     }
 
     func testMultipleTaskOnMultipleBackgroundThread() {
-        for _ in 0...5 {
+        let startTime = Date()
+        for i in 0...5 {
             queue.async { [unowned self] in
                 self.compute()
+                print("\(i) - \(Date().timeIntervalSince(startTime))")
             }
         }
-    }
-
-    func testSequentialTasksOnSingleBackgrounThread() {
-        // Not sure if we need that?
     }
 
     func compute() {
@@ -121,7 +119,3 @@ class SwiftThreadPerformance: TestThreadPerformance {
         return sorted
     }
 }
-
-//
-//extension AndroidThreadPerformance: TestThreadPerformance {
-//}
