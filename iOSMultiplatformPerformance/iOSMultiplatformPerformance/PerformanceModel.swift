@@ -4,62 +4,33 @@ import common
 /*
  TODOs:
 
+ 1. Can print all async tasks individually on Android instead of block completion time (as we do on iOS)
  3. Prepare code for multiple runs
  5. Test with Performance analyze tools (Xcode)
  6. Write a post ?
+ 7. Fix android random array
+ 8. Fix android running at the same time.
+ 9. Disable buttons when test is running
 
  ---
- Can print all async tasks individually on Android instead of block completion time (as we do on iOS)
+ Talk with Ferran
  Random array causes inconsistent results
  Android currently has issue that tests are running at the same time (not blocking)
  */
 
-protocol TestThreadPerformance {
-    func testSingleTaskOnSingleBackgroundThread()
-    func testMultipleTaskOnMultipleBackgroundThread()
-}
-
-enum Platform {
-    case iOS
-    case android
-}
-
 class PerformanceModel: ObservableObject {
-    private let queue = DispatchQueue(label: "com.app.concurrentQueue", attributes: .concurrent)
     private let swiftThreadPerformance = SwiftThreadPerformance(size: 2000)
-    @Published var currentPlatform: Platform = .iOS
-
-    private var performanceTester: TestThreadPerformance {
-//        switch currentPlatform {
-//        case .iOS:
-            return swiftThreadPerformance
-//        case .android:
-//            return androidThreadPerformance
-//        }
-    }
 
     func iosTesting() {
-        currentPlatform = .iOS
+        swiftThreadPerformance.testSingleTaskOnSingleBackgroundThread {
+            self.swiftThreadPerformance.testMultipleTaskOnMultipleBackgroundThread()
+        }
     }
 
     func androidTesting() {
-
         Greeting().greeting { text in
             print(text)
         }
-        currentPlatform = .android
-    }
-
-    func singleTaskOnSingleBackgroundThread() {
-        performanceTester.testSingleTaskOnSingleBackgroundThread()
-    }
-
-    func multipleTaskOnMultipleBackgroundThread() {
-        performanceTester.testMultipleTaskOnMultipleBackgroundThread()
-    }
-
-    private func compute() {
-        SwiftThreadPerformance(size: 5000).compute()
     }
 }
 
@@ -71,7 +42,7 @@ extension DateFormatter {
     }
 }
 
-class SwiftThreadPerformance: TestThreadPerformance {
+class SwiftThreadPerformance {
     let testArray: [Int]
     private let queue = DispatchQueue(label: "com.app.concurrentQueue", attributes: .concurrent)
 
@@ -79,11 +50,14 @@ class SwiftThreadPerformance: TestThreadPerformance {
         testArray = Array(0...size)
     }
 
-    func testSingleTaskOnSingleBackgroundThread() {
+    func testSingleTaskOnSingleBackgroundThread(onComplete: @escaping () -> Void) {
         let startTime = Date()
         DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
             self.compute()
             print(Date().timeIntervalSince(startTime))
+            DispatchQueue.main.async {
+                onComplete()
+            }
         }
     }
 
