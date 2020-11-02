@@ -8,14 +8,13 @@ import common
  3. Prepare code for multiple runs
  5. Test with Performance analyze tools (Xcode)
  6. Write a post ?
- 7. Fix android random array
- 8. Fix android running at the same time.
  9. Disable buttons when test is running
 
  ---
  Talk with Ferran
  Random array causes inconsistent results
  Android currently has issue that tests are running at the same time (not blocking)
+ NOTE: Seems like android is using main scope to run computation that is meant to be on background
  */
 
 class PerformanceModel: ObservableObject {
