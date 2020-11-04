@@ -1,29 +1,28 @@
 package com.example.kotlinmultiplatformperformance.common
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 class Greeting {
-    val mainScope: CoroutineScope = CustomMainScope()
-
     @ExperimentalTime
     fun greeting(callback: (String) -> Unit) {
-        mainScope.launch {
-            val androidThreadPerformance = AndroidThreadPerformance(2000, this)
+        GlobalScope.launch(Dispatchers.Main) {
 
-            mutableListOf(androidThreadPerformance.testSingleTaskOnSingleBackgroundThread {
-                callback(it)
-            })
+            val androidThreadPerformance = AndroidThreadPerformance(2000)
+
+            val report = mutableListOf(androidThreadPerformance.testSingleTaskOnSingleBackgroundThread())
 
             val duration = measureTime {
-                androidThreadPerformance.testSingleTaskOnMultipleBackgroundThread {
-                    callback(it)
-                }
+                report.add(androidThreadPerformance.testSingleTaskOnMultipleBackgroundThread())
             }
 
-            callback("four task on a background thread took $duration in parallel")
+            report.add("four task on a background thread took $duration in parallel")
+
+            callback(report.joinToString(separator = "\n"))
         }
     }
 }

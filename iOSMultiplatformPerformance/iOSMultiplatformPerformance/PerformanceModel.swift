@@ -27,8 +27,12 @@ class PerformanceModel: ObservableObject {
     }
 
     func androidTesting() {
-        Greeting().greeting { text in
-            print(text)
+        let model = NativeViewModel()
+        model.testSingleTaskOnSingleBackgroundThread { report in
+            print(report)
+            model.testSingleTaskOnMultipleBackgroundThread { report in
+                print(report)
+            }
         }
     }
 }

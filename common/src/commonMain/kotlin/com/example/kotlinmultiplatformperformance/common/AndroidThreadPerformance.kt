@@ -1,43 +1,33 @@
 package com.example.kotlinmultiplatformperformance.common
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 @ExperimentalTime
-class AndroidThreadPerformance(private val size: Int, private val scope: CoroutineScope) {
-
-    fun testSingleTaskOnSingleBackgroundThread(callback: (String) -> Unit) {
-        scope.launch {
-            val measureTime = measureTime {
-                val single = compute()
-            }
-            callback("single task on a background thread took $measureTime")
+class AndroidThreadPerformance(private val size: Int) {
+    suspend fun testSingleTaskOnSingleBackgroundThread() = withContext(Dispatchers.Default) {
+        val measureTime = measureTime {
+            val single = compute()
         }
+        "single task on a background thread took $measureTime"
     }
 
-    suspend fun testSingleTaskOnMultipleBackgroundThread(callback: (String) -> Unit) {
-        scope.launch {
+    suspend fun testSingleTaskOnMultipleBackgroundThread() = withContext(Dispatchers.Default) {
+        val async1 = async { compute() }
+        val async2 = async { compute() }
+        val async3 = async { compute() }
+        val async4 = async { compute() }
+        val async5 = async { compute() }
 
-            val async1 = async { compute() }
-            val async2 = async { compute() }
-            val async3 = async { compute() }
-            val async4 = async { compute() }
-            val async5 = async { compute() }
-
-            val total =
-                async1.await() + async2.await() + async3.await() + async4.await() + async5.await()
-            callback("four task on a background thread took $total adding them up")
-        }
+        val total = async1.await() + async2.await() + async3.await() + async4.await() + async5.await()
+        "four task on a background thread took $total adding them up"
     }
 
     private fun compute(): Duration = measureTime {
         val testArray =  (0..size).toList()
-
         bubbleSort(testArray)
     }
 
