@@ -28,12 +28,7 @@ class PerformanceModel: ObservableObject {
 
     func androidTesting() {
         let model = NativeViewModel()
-        model.testSingleTaskOnSingleBackgroundThread { report in
-            print(report)
-            model.testSingleTaskOnMultipleBackgroundThread { report in
-                print(report)
-            }
-        }
+        model.testAsync()
     }
 }
 
@@ -66,7 +61,7 @@ class SwiftThreadPerformance {
 
     func testMultipleTaskOnMultipleBackgroundThread() {
         let startTime = Date()
-        for i in 0...5 {
+        for i in 0...7 {
             queue.async { [unowned self] in
                 self.compute()
                 print("\(i) - \(Date().timeIntervalSince(startTime))")

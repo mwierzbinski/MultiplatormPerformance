@@ -1,7 +1,6 @@
 package com.example.kotlinmultiplatformperformance.common
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
@@ -9,7 +8,7 @@ import kotlin.time.measureTime
 class NativeViewModel {
 
     private val scope = MainScope(Dispatchers.Main)
-    private val threadPerformance: AndroidThreadPerformance = AndroidThreadPerformance(2000)
+    private val threadPerformance: AndroidThreadPerformance = AndroidThreadPerformance(2000, dispatcherProvider = DispatcherProvider())
 
     fun testSingleTaskOnSingleBackgroundThread(onComplete: (String) -> Unit) {
         scope.launch {
@@ -28,6 +27,24 @@ class NativeViewModel {
 
             report.add("four task on a background thread took $duration in parallel")
             onComplete(report.joinToString(separator = "\n"))
+        }
+    }
+
+    fun testLaunch() {
+        scope.launch {
+            val duration = measureTime {
+                threadPerformance.testLaunchMultithreading()
+            }
+            println("four task on a background thread took $duration in parallel")
+        }
+    }
+
+    fun testAsync() {
+        scope.launch {
+            val duration = measureTime {
+                threadPerformance.testAsyncMultithreading()
+            }
+            println("four task on a background thread took $duration in parallel")
         }
     }
 
